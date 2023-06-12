@@ -62,10 +62,10 @@ const HomePage = () => {
   // date ended
 
   const handleButtonPress = () => {
-    setUpdateFood(true);
     if (isLunchChecked == false && isEggChecked == false) {
       return;
     } else {
+      setUpdateFood(true);
       setButtonPressed(true);
       if (isLunchChecked === true) {
         SetTotalLunch(totalLunch + 1);
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
+    paddingTop: 40,
     backgroundColor: "#181818",
     paddingVertical: 15,
     color: "black",
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     shadowColor: "black",
   },
   checkboxcontainer: {
-    marginTop: 40,
+    marginTop: 50,
     height: 150,
     paddingTop: 20,
     width: "50%",
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 10,
     backgroundColor: "#CFF5E7",
-    marginTop: 40,
+    marginTop: 50,
     marginHorizontal: 5,
     elevation: 5,
     shadowColor: "#00E7FF",
@@ -219,12 +220,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "red",
   },
-  data:{
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    marginRight:24
-  }
+  data: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginRight: 24,
+  },
 });
 
 export default HomePage;
