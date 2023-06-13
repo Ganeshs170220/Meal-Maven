@@ -7,39 +7,56 @@ import HomePage from "./components/HomePage";
 import LoginScreen from "./components/LoginScreen";
 import MenuIcons from "./components/UI/MenuIcons";
 import CustomDrawerContent from "./components/UI/CustomDrawerContent";
-
+import Food from "./components/Food";
+import { createStackNavigator } from "@react-navigation/stack";
+import Egg from "./components/Egg";
 const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
+
+function Root() {
+  return (
+    <Drawer.Navigator
+      initialRouteName="Logout"
+      drawerContent={CustomDrawerContent}
+    >
+      <Drawer.Screen
+        name="MealMaven"
+        component={HomePage}
+        options={{
+          title: "Home",
+          drawerIcon: () => <MenuIcons name="home" />,
+          headerTitle: null,
+          headerStyle: { height: 0 },
+          headerTintColor: "white",
+        }}
+      />
+      <Drawer.Screen
+        name="Logout"
+        component={LoginScreen}
+        options={{
+          title: "Logout",
+          drawerIcon: () => <MenuIcons name="exit-to-app" />,
+          headerShown: false,
+        }}
+      />
+    </Drawer.Navigator>
+  );
+}
+
 const App = () => {
   return (
     <NavigationContainer>
       <StatusBar style="light" backgroundColor="#181818" />
-      <Drawer.Navigator
-        initialRouteName="Logout"
-        drawerContent={CustomDrawerContent}
-      >
-        
-        <Drawer.Screen
-          name="MealMaven"
-          component={HomePage}
-          options={{
-            title: "Home",
-            drawerIcon: () => <MenuIcons name="home" />,
-            headerTitle: null,
-            headerStyle: { height: 0 },
-            headerTintColor: "white",
-          }}
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Root"
+          component={Root}
+          options={{ headerShown: false }}
         />
-
-        <Drawer.Screen
-          name="Logout"
-          component={LoginScreen}
-          options={{
-            title: "Logout",
-            drawerIcon: () => <MenuIcons name="exit-to-app" />,
-            headerShown: false,
-          }}
-        />
-      </Drawer.Navigator>
+        <Stack.Screen name="Home" component={HomePage} />
+        <Stack.Screen name="Food" component={Food} />
+        <Stack.Screen name="Egg" component={Egg} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

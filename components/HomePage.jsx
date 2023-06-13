@@ -5,6 +5,8 @@ import { Fragment } from "react";
 import { CheckBox } from "react-native-elements";
 import { Button } from "react-native-elements";
 import Data from "./UI/Data";
+import { useNavigation } from "@react-navigation/native";
+
 
 const MyCheckbox = ({ title, checked, onPress, disabled }) => {
   return (
@@ -33,6 +35,7 @@ const HomePage = () => {
   const [guest, setGuest] = useState(0);
   const [buttonPressed, setButtonPressed] = useState(false);
   const [updatefood, setUpdateFood] = useState(false);
+
 
   const handleCheckboxToggleLunch = (event) => {
     setIsLunchChecked(!isLunchChecked);
@@ -75,6 +78,7 @@ const HomePage = () => {
       }
     }
   };
+
 
   return (
     <Fragment>
@@ -121,8 +125,10 @@ const HomePage = () => {
           <View style={{ paddingBottom: 15 }}>
             <Data title="Total food quantity" value={formattedDate} />
           </View>
-          <Data title="Total Lunch" value={totalLunch} name="arrow-right" />
-          <Data title="Total Eggs" value={totalEgg} name="arrow-right" />
+
+          <Data title="Total Lunch" value={totalLunch} names="arrow-right" Userdetails={'Food'}/>
+
+          <Data title="Total Eggs" value={totalEgg} names="arrow-right"  Userdetails={'Egg'}/>
           <View style={styles.data}>
             <Text style={{ fontSize: 19 }}>Guest</Text>
             <View style={{ display: "flex", flexDirection: "row" }}>

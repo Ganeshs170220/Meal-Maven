@@ -1,25 +1,27 @@
 import { TouchableOpacity, StyleSheet, Text, View } from "react-native";
-import React, { Fragment } from "react";
+import React from "react";
 import { Icon } from "react-native-elements";
+import { useNavigation } from "@react-navigation/native";
 
-const Data = (props) => {
+const Data = ({ title, value, names, Userdetails }) => {
+  const navigation = useNavigation();
   return (
-    <Fragment>
-      <View style={styles.data}>
-        <Text style={{ fontSize: 19 }}>{props.title}</Text>
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={{ fontSize: 19 }}>{props.value}</Text>
-          <TouchableOpacity style={styles.button}>
-            <Icon
-              style={{ marginTop: 2 }}
-              name={props.name}
-              size={24}
-              color="black"
-            />
-          </TouchableOpacity>
-        </View>
+    <View style={styles.data}>
+      <Text style={{ fontSize: 19 }}>{title}</Text>
+      <View style={{ display: "flex", flexDirection: "row" }}>
+        <Text style={{ fontSize: 19 }}>{value}</Text>
+
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate(Userdetails);
+          }}
+          style={styles.button}
+        >
+          <Icon style={{ marginTop: 2 }} name={names} size={24} color="black" />
+        </TouchableOpacity>
+        
       </View>
-    </Fragment>
+    </View>
   );
 };
 
