@@ -7,6 +7,7 @@ import HomePage from "./components/HomePage";
 import LoginScreen from "./components/LoginScreen";
 import MenuIcons from "./components/UI/MenuIcons";
 import CustomDrawerContent from "./components/UI/CustomDrawerContent";
+
 const Drawer = createDrawerNavigator();
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         initialRouteName="Logout"
         drawerContent={CustomDrawerContent}
       >
+        
         <Drawer.Screen
           name="MealMaven"
           component={HomePage}
@@ -27,6 +29,7 @@ const App = () => {
             headerTintColor: "white",
           }}
         />
+
         <Drawer.Screen
           name="Logout"
           component={LoginScreen}

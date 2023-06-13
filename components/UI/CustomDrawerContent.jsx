@@ -6,14 +6,28 @@ import {
   DrawerItem,
 } from "@react-navigation/drawer";
 import MenuIcons from "./MenuIcons";
+import { useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+const auth = getAuth();
 const PlaceholderImage = require("../../assets/logo.png");
 
 const CustomDrawerContent = (props) => {
+  const [userEmail, setUserEmail] = useState("");
   const handleCustomLinkPress = () => {
     const url = "https://easycloud.in";
     Linking.openURL(url);
   };
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const umail = user.email;
+      setUserEmail(umail);
+    } else {
+      console.log("user signedout");
+    }
+  });
+
   return (
     <DrawerContentScrollView
       {...props}
@@ -23,7 +37,7 @@ const CustomDrawerContent = (props) => {
         <View style={styles.logoWrapper}>
           <Image source={PlaceholderImage} style={styles.logo} />
         </View>
-        <Text style={styles.usermail}>ganeshguntuku2002@gmail.com</Text>
+        <Text style={styles.usermail}>{userEmail}</Text>
       </View>
       <DrawerItemList {...props} />
       <DrawerItem

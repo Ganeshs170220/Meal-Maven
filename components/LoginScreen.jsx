@@ -1,26 +1,40 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { signInWithEmailAndPassword } from "firebase/auth";
+// import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+
 const PlaceholderImage = require("../assets/1.gif");
 
 function LoginScreen({ navigation }) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
+  
   const handleLogin = () => {
     // Perform login logic here
-    if (username === "admin" && password === "password") {
-      navigation.navigate("MealMaven");
-    } else {
-      alert("Invalid credentials. Please try again.");
-    }
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredintial) => {
+        const user = userCredintial.user;
+        console.log("loggedin with:", user.email);
+        navigation.navigate("MealMaven");
+      })
+      .catch((error) => alert(error.message));
   };
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
-  
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -33,10 +47,11 @@ function LoginScreen({ navigation }) {
 
       <View style={styles.inputComponents}>
         <TextInput
+          keyboardType="email-address"
           style={styles.input}
-          placeholder="Username"
-          value={username}
-          onChangeText={(text) => setUsername(text)}
+          placeholder="email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
         <View style={styles.passwordInputContainer}>
           <TextInput
@@ -46,8 +61,15 @@ function LoginScreen({ navigation }) {
             value={password}
             onChangeText={(text) => setPassword(text)}
           />
-          <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIconContainer}>
-            <MaterialCommunityIcons name={isPasswordVisible ? "eye-off" : "eye"} size={24} color="black" />
+          <TouchableOpacity
+            onPress={togglePasswordVisibility}
+            style={styles.eyeIconContainer}
+          >
+            <MaterialCommunityIcons
+              name={isPasswordVisible ? "eye-off" : "eye"}
+              size={24}
+              color="black"
+            />
           </TouchableOpacity>
         </View>
         <Button title="Login" onPress={handleLogin} style={styles.button} />

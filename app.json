@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "Meal_Maven",
-    "slug": "Meal_Maven",
+    "name": "Meal Maven",
+    "slug": "meal-maven",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,10 +20,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ganeshguntuku.Meal_Maven"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4d2f2dea-e42e-4f0b-a116-769a2731ea8b"
+      }
+    },
+    "owner": "ganeshguntuku"
   }
 }
