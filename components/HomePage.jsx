@@ -5,7 +5,7 @@ import { Fragment } from "react";
 import { CheckBox } from "react-native-elements";
 import { Button } from "react-native-elements";
 import Data from "./UI/Data";
-import { useNavigation } from "@react-navigation/native";
+
 
 
 const MyCheckbox = ({ title, checked, onPress, disabled }) => {

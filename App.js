@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DrawerActions } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomePage from "./components/HomePage";
 import LoginScreen from "./components/LoginScreen";
@@ -9,18 +9,38 @@ import MenuIcons from "./components/UI/MenuIcons";
 import CustomDrawerContent from "./components/UI/CustomDrawerContent";
 import Food from "./components/Food";
 import { createStackNavigator } from "@react-navigation/stack";
+import Feedback from "./components/Feedback";
 import Egg from "./components/Egg";
+import "firebase/auth";
+import { TouchableOpacity } from "react-native";
+import { Text } from "react-native-elements";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
-function Root() {
+const Root = (props) => {
+  const handleLogout = () => {
+    auth
+      .signOut()
+      .then(() => {
+        console.log("Logged out");
+        props.navigation.navigate("LoginScreen");
+      })
+
+      .catch((error) => {
+        console.log("Logout error:", error.message);
+      });
+  };
+
   return (
     <Drawer.Navigator
-      initialRouteName="Logout"
+      initialRouteName="LoginScreen"
       drawerContent={CustomDrawerContent}
     >
       <Drawer.Screen
-        name="MealMaven"
+        name="HomePage"
         component={HomePage}
         options={{
           title: "Home",
@@ -31,17 +51,41 @@ function Root() {
         }}
       />
       <Drawer.Screen
-        name="Logout"
+        name="LoginScreen"
         component={LoginScreen}
-        options={{
+        options={() => ({
+          drawerIcon: () => (
+            <TouchableOpacity onPress={() => handleLogout()}>
+              <MenuIcons name="exit-to-app" />
+            </TouchableOpacity>
+          ),
+          drawerLabel: () => (
+            <TouchableOpacity
+              onPress={() => {
+                handleLogout();
+              }}
+            >
+              <Text>Logout</Text>
+            </TouchableOpacity>
+          ),
           title: "Logout",
-          drawerIcon: () => <MenuIcons name="exit-to-app" />,
           headerShown: false,
+        })}
+      />
+       <Drawer.Screen
+        name="FeedBack"
+        component={Feedback}
+        options={{
+          title: "Food Feedback",
+          drawerIcon: () => <MenuIcons name="comment-text-outline" />,
+          headerTitle: null,
+          headerStyle: { height: 0 },
+          headerTintColor: "white",
         }}
       />
     </Drawer.Navigator>
   );
-}
+};
 
 const App = () => {
   return (
@@ -60,5 +104,7 @@ const App = () => {
     </NavigationContainer>
   );
 };
+
 const styles = StyleSheet.create({});
+
 export default App;

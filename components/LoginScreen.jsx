@@ -26,10 +26,24 @@ function LoginScreen({ navigation }) {
       .then((userCredintial) => {
         const user = userCredintial.user;
         console.log("loggedin with:", user.email);
-        navigation.navigate("MealMaven");
+        navigation.navigate("HomePage");
       })
       .catch((error) => alert(error.message));
   };
+  
+  // const handleLogin = () => {
+    
+  //     signInWithEmailAndPassword(auth,email, password)
+  //     .then((userCredintial) => {
+  //       const user = userCredintial.user;
+  //       console.log("loggedin with:", user.email);
+  //       navigation.reset({
+  //         index: 0,
+  //         routes: [{ name: "HomePage" }],
+  //       });
+  //     })
+  //     .catch((error) => alert(error.message));
+  // };
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);

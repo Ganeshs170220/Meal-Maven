@@ -24,10 +24,9 @@ const CustomDrawerContent = (props) => {
       const umail = user.email;
       setUserEmail(umail);
     } else {
-      console.log("user signedout");
+      return
     }
   });
-
   return (
     <DrawerContentScrollView
       {...props}
@@ -59,7 +58,6 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   usermail: {
-    // backgroundColor:'black',
     color: "white",
     fontSize: 15,
     paddingTop: 10,
