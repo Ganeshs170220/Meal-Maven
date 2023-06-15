@@ -5,8 +5,10 @@ import { Fragment } from "react";
 import { CheckBox } from "react-native-elements";
 import { Button } from "react-native-elements";
 import Data from "./UI/Data";
+import { app, auth } from "../firebase";
+import { getDatabase, ref, onValue, off, set } from "firebase/database";
 
-
+const database = getDatabase(app);
 
 const MyCheckbox = ({ title, checked, onPress, disabled }) => {
   return (
@@ -30,12 +32,49 @@ const MyCheckbox = ({ title, checked, onPress, disabled }) => {
 const HomePage = () => {
   const [isLunchChecked, setIsLunchChecked] = useState(false);
   const [isEggChecked, setIsEggChecked] = useState(false);
-  const [totalLunch, SetTotalLunch] = useState(0);
-  const [totalEgg, SetTotalEgg] = useState(0);
+  const [totalLunch, setTotalLunch] = useState(0);
+  const [totalEgg, setTotalEgg] = useState(0);
   const [guest, setGuest] = useState(0);
   const [buttonPressed, setButtonPressed] = useState(false);
   const [updatefood, setUpdateFood] = useState(false);
+  const [userDetails, setUserDetails] = useState({ email: "" });
 
+  useEffect(() => {
+    const database = getDatabase(app);
+
+    const totalLunchRef = ref(database, "totalLunch");
+    const totalEggRef = ref(database, "totalEgg");
+
+    const totalLunchListener = onValue(totalLunchRef, (snapshot) => {
+      const lunchData = snapshot.val();
+      setTotalLunch(lunchData);
+    });
+    const totalEggListener = onValue(totalEggRef, (snapshot) => {
+      const eggData = snapshot.val();
+      setTotalEgg(eggData);
+    });
+    const resetCountsAtMidnight = () => {
+      const currentDate = new Date();
+      const currentHours = currentDate.getHours();
+      const currentMinutes = currentDate.getMinutes();
+
+      if (currentHours === 0 && currentMinutes === 0) {
+        const totalEggRef = ref(database, "totalEgg");
+        set(totalEggRef, 0);
+        const totalLunchRef = ref(database, "totalLunch");
+        set(totalLunchRef, 0);
+      }
+    };
+
+    // Check for midnight reset every minute
+    const interval = setInterval(resetCountsAtMidnight, 60000);
+
+    return () => {
+      off(totalLunchRef, totalLunchListener);
+      off(totalEggRef, totalEggListener);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleCheckboxToggleLunch = (event) => {
     setIsLunchChecked(!isLunchChecked);
@@ -71,14 +110,18 @@ const HomePage = () => {
       setUpdateFood(true);
       setButtonPressed(true);
       if (isLunchChecked === true) {
-        SetTotalLunch(totalLunch + 1);
+        const database = getDatabase(app);
+        const totalLunchRef = ref(database, "totalLunch");
+        set(totalLunchRef, totalLunch + 1);
       }
       if (isEggChecked === true) {
-        SetTotalEgg(totalEgg + 1);
+        const database = getDatabase(app);
+        const totalEggRef = ref(database, "totalEgg");
+        set(totalEggRef, totalEgg + 1);
+
       }
     }
   };
-
 
   return (
     <Fragment>
@@ -126,9 +169,19 @@ const HomePage = () => {
             <Data title="Total food quantity" value={formattedDate} />
           </View>
 
-          <Data title="Total Lunch" value={totalLunch} names="arrow-right" Userdetails={'Food'}/>
+          <Data
+            title="Total Lunch"
+            value={totalLunch}
+            names="arrow-right"
+            Userdetails={"Food"}
+          />
 
-          <Data title="Total Eggs" value={totalEgg} names="arrow-right"  Userdetails={'Egg'}/>
+          <Data
+            title="Total Eggs"
+            value={totalEgg}
+            names="arrow-right"
+            Userdetails={"Egg"}
+          />
           <View style={styles.data}>
             <Text style={{ fontSize: 19 }}>Guest</Text>
             <View style={{ display: "flex", flexDirection: "row" }}>
