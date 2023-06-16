@@ -21,17 +21,19 @@ const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
 const Root = (props) => {
+
   const handleLogout = () => {
+    // Perform logout logic here
+    // For example, calling a signOut method from Firebase auth
     auth
       .signOut()
       .then(() => {
-        console.log("Logged out");
-        props.navigation.navigate("LoginScreen");
+        props.navigation.reset({
+          index: 0,
+          routes: [{ name: "LoginScreen" }],
+        });
       })
-
-      .catch((error) => {
-        console.log("Logout error:", error.message);
-      });
+      .catch((error) => alert(error.message));
   };
 
   return (

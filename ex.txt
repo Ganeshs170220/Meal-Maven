@@ -36,8 +36,9 @@ const HomePage = () => {
   const [guest, setGuest] = useState(0);
   const [buttonPressed, setButtonPressed] = useState(false);
   const [updatefood, setUpdateFood] = useState(false);
-  const [lunchUserDetails, setLunchUserDetails] = useState(null);
-  const [eggUserDetails, setEggUserDetails] = useState(null);
+
+  // const [egguserDetails, setEggUserDetails] = useState(null);
+  // const [lunchUserDetails, setLunchUserDetails] = useState(null);
 
   useEffect(() => {
     const database = getDatabase(app);
@@ -49,7 +50,7 @@ const HomePage = () => {
       const lunchData = snapshot.val();
       setTotalLunch(lunchData);
     });
-
+    
     const totalEggListener = onValue(totalEggRef, (snapshot) => {
       const eggData = snapshot.val();
       setTotalEgg(eggData);
@@ -78,40 +79,14 @@ const HomePage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const database = getDatabase(app);
+  const handleCheckboxToggleLunch = (event) => {
+    setIsLunchChecked(!isLunchChecked);
+  };
 
-    const lunchSubmittedRef = ref(
-      database,
-      `userDetails/lunch/${auth.currentUser.uid}`
-    );
-    const eggSubmittedRef = ref(
-      database,
-      `userDetails/egg/${auth.currentUser.uid}`
-    );
+  const handleCheckboxToggleEgg = (event) => {
+    setIsEggChecked(!isEggChecked);
+  };
 
-    get(lunchSubmittedRef)
-      .then((lunchSubmittedSnapshot) => {
-        if (lunchSubmittedSnapshot.exists()) {
-          setIsLunchChecked(true);
-          setLunchUserDetails(lunchSubmittedSnapshot.val());
-        }
-      })
-      .catch((error) => {
-        console.error("Error getting lunch submission:", error);
-      });
-
-    get(eggSubmittedRef)
-      .then((eggSubmittedSnapshot) => {
-        if (eggSubmittedSnapshot.exists()) {
-          setIsEggChecked(true);
-          setEggUserDetails(eggSubmittedSnapshot.val());
-        }
-      })
-      .catch((error) => {
-        console.error("Error getting egg submission:", error);
-      });
-  }, []);
   // date started
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   useEffect(() => {
@@ -131,53 +106,75 @@ const HomePage = () => {
   const formattedDate = `${dateParts[1]}-${dateParts[0]}-${dateParts[2]}`;
   // date ended
 
-  const handleCheckboxToggleLunch = () => {
-    if (!lunchUserDetails && !buttonPressed) {
-      setIsLunchChecked(!isLunchChecked);
-    }
-  };
-
-  const handleCheckboxToggleEgg = () => {
-    if (!eggUserDetails && !buttonPressed) {
-      setIsEggChecked(!isEggChecked);
-    }
-  };
-
+ 
   const handleButtonPress = () => {
     if (!isLunchChecked && !isEggChecked) {
       return;
     }
 
-    if (isLunchChecked && !lunchUserDetails) {
-      const updatedUserDetails = {
-        lunch_user_email: auth.currentUser.email,
-      };
-      set(
-        ref(database, `userDetails/lunch/${auth.currentUser.uid}`),
-        updatedUserDetails
-      );
-      console.log("Lunch Submitted by:", auth.currentUser.email);
+    const databases = getDatabase();
 
-      const totalLunchRef = ref(database, "totalLunch");
-      set(totalLunchRef, totalLunch + 1);
+    if (isLunchChecked) {
+      const lunchSubmittedRef = ref(
+        databases,
+        `userDetails/lunch/${auth.currentUser.uid}`
+      );
+      get(lunchSubmittedRef)
+        .then((lunchSubmittedSnapshot) => {
+          if (!lunchSubmittedSnapshot.exists()) {
+            // User has not submitted lunch details yet, proceed with the update
+            const updatedUserDetails = {
+              lunch_user_email: auth.currentUser.email,
+            };
+            set(
+              ref(database, `userDetails/lunch/${auth.currentUser.uid}`),
+              updatedUserDetails
+            );
+            console.log("Lunch Submitted by:", auth.currentUser.email);
+
+            const totalLunchRef = ref(database, "totalLunch");
+            set(totalLunchRef, totalLunch + 1);
+          } else {
+            // User has already submitted lunch details
+            console.log("User has already submitted lunch details");
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting lunch submission:", error);
+        });
     }
 
-    if (isEggChecked && !eggUserDetails) {
-      const updatedUserDetails = {
-        egg_user_email: auth.currentUser.email,
-      };
-      set(
-        ref(database, `userDetails/egg/${auth.currentUser.uid}`),
-        updatedUserDetails
+    if (isEggChecked) {
+      const eggSubmittedRef = ref(
+        databases,
+        `userDetails/egg/${auth.currentUser.uid}`
       );
-      console.log("Egg Submitted by:", auth.currentUser.email);
+      get(eggSubmittedRef)
+        .then((eggSubmittedSnapshot) => {
+          if (!eggSubmittedSnapshot.exists()) {
+            // User has not submitted egg details yet, proceed with the update
+            const updatedUserDetails = {
+              egg_user_email: auth.currentUser.email,
+            };
+            set(
+              ref(database, `userDetails/egg/${auth.currentUser.uid}`),
+              updatedUserDetails
+            );
+            console.log("Egg Submitted by:", auth.currentUser.email);
 
-      const totalEggRef = ref(database, "totalEgg");
-      set(totalEggRef, totalEgg + 1);
+            const totalEggRef = ref(database, "totalEgg");
+            set(totalEggRef, totalEgg + 1);
+          } else {
+            // User has already submitted egg details
+            console.log("User has already submitted egg details");
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting egg submission:", error);
+        });
+      setUpdateFood(true);
+      setButtonPressed(true);
     }
-
-    setUpdateFood(true);
-    setButtonPressed(true);
   };
 
   return (
@@ -192,22 +189,13 @@ const HomePage = () => {
             title="Lunch"
             onPress={handleCheckboxToggleLunch}
             checked={isLunchChecked}
-            disabled={
-              buttonPressed ||
-              lunchUserDetails ||
-              (eggUserDetails && !lunchUserDetails)
-            }
+            disabled={buttonPressed}
           />
-
           <MyCheckbox
             title="Egg"
             onPress={handleCheckboxToggleEgg}
             checked={isEggChecked}
-            disabled={
-              buttonPressed ||
-              lunchUserDetails ||
-              (eggUserDetails && !lunchUserDetails)
-            }
+            disabled={buttonPressed}
           />
         </View>
         <View style={styles.lunchupdate}>
@@ -216,11 +204,7 @@ const HomePage = () => {
             <Button
               title="Yes"
               onPress={handleButtonPress}
-              disabled={
-                (isLunchChecked && lunchUserDetails) ||
-                (isEggChecked && eggUserDetails) ||
-                buttonPressed
-              }
+              disabled={buttonPressed}
               buttonStyle={{
                 backgroundColor: "#0D4C92",
                 borderRadius: 10,
@@ -265,9 +249,7 @@ const HomePage = () => {
         </View>
 
         <View style={styles.footer}>
-          {(isLunchChecked && lunchUserDetails) ||
-                (isEggChecked && eggUserDetails) ||
-                buttonPressed ? (
+          {updatefood ? (
             <Text style={styles.footerText}>Successfully updated 🤗😘 </Text>
           ) : (
             <Text style={styles.footerText}>
@@ -279,7 +261,6 @@ const HomePage = () => {
     </Fragment>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

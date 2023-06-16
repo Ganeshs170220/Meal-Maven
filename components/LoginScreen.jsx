@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { signInWithEmailAndPassword } from "firebase/auth";
-// import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
 const PlaceholderImage = require("../assets/1.gif");
@@ -23,27 +22,26 @@ function LoginScreen({ navigation }) {
   const handleLogin = () => {
     // Perform login logic here
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredintial) => {
-        const user = userCredintial.user;
-        console.log("loggedin with:", user.email);
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("Logged in with:", user.email);
         navigation.navigate("HomePage");
       })
       .catch((error) => alert(error.message));
   };
-  
-  // const handleLogin = () => {
-    
-  //     signInWithEmailAndPassword(auth,email, password)
-  //     .then((userCredintial) => {
-  //       const user = userCredintial.user;
-  //       console.log("loggedin with:", user.email);
-  //       navigation.reset({
-  //         index: 0,
-  //         routes: [{ name: "HomePage" }],
-  //       });
-  //     })
-  //     .catch((error) => alert(error.message));
-  // };
+
+  useEffect(() => {
+    // Add a listener to check if the user is already logged in
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is logged in, navigate to the HomePage
+        navigation.navigate("HomePage");
+      }
+    });
+
+    // Cleanup the listener on unmount
+    return () => unsubscribe();
+  }, [navigation]);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -63,7 +61,7 @@ function LoginScreen({ navigation }) {
         <TextInput
           keyboardType="email-address"
           style={styles.input}
-          placeholder="email"
+          placeholder="Email"
           value={email}
           onChangeText={(text) => setEmail(text)}
         />
@@ -91,7 +89,6 @@ function LoginScreen({ navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
