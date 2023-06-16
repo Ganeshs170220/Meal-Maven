@@ -6,8 +6,7 @@ import { CheckBox } from "react-native-elements";
 import { Button } from "react-native-elements";
 import Data from "./UI/Data";
 import { app, auth } from "../firebase";
-import { getDatabase, ref, onValue, off, set } from "firebase/database";
-
+import { getDatabase, ref, onValue, off, set, get } from "firebase/database";
 const database = getDatabase(app);
 
 const MyCheckbox = ({ title, checked, onPress, disabled }) => {
@@ -37,7 +36,9 @@ const HomePage = () => {
   const [guest, setGuest] = useState(0);
   const [buttonPressed, setButtonPressed] = useState(false);
   const [updatefood, setUpdateFood] = useState(false);
-  const [userDetails, setUserDetails] = useState({ email: "" });
+
+  const [egguserDetails, setEggUserDetails] = useState(null);
+  const [lunchUserDetails, setLunchUserDetails] = useState(null);
 
   useEffect(() => {
     const database = getDatabase(app);
@@ -103,26 +104,120 @@ const HomePage = () => {
   const formattedDate = `${dateParts[1]}-${dateParts[0]}-${dateParts[2]}`;
   // date ended
 
+  // const handleButtonPress = () => {
+  // if (isLunchChecked == false && isEggChecked == false) {
+  //   return;
+  // } else {
+  // setUpdateFood(true);
+  // setButtonPressed(true);
+
+  //     if (isLunchChecked === true) {
+  //       const databases = getDatabase();
+  //       // const lunchUserDetailsRef = ref(databases, 'userDetails');
+  //       const updatedUserDetails = { lunch_user_email: auth.currentUser.email };
+  //       set(ref(databases, `userDetails/lunch`), updatedUserDetails);
+  //       // setLunchUserDetails(auth.currentUser.email);
+  //       console.log('Lunch Submitted by:', auth.currentUser.email);
+
+  //       const database = getDatabase(app);
+  //       const totalLunchRef = ref(database, "totalLunch");
+  //       set(totalLunchRef, totalLunch + 1);
+  //     }
+  //     if (isEggChecked === true) {
+  //       const databases = getDatabase();
+
+  //       const updatedUserDetails = { egg_user_email: auth.currentUser.email };
+  //       set(ref(databases, `userDetails/egg`), updatedUserDetails);
+  //       // setEggUserDetails(auth.currentUser.email);
+  //       console.log('Egg Submitted by:', auth.currentUser.email);
+
+  //       const database = getDatabase(app);
+  //       const totalEggRef = ref(database, "totalEgg");
+  //       set(totalEggRef, totalEgg + 1);
+  //     }
+  //   }
+  // };
   const handleButtonPress = () => {
-    if (isLunchChecked == false && isEggChecked == false) {
+    if (!isLunchChecked && !isEggChecked) {
       return;
-    } else {
+    }
+
+    const databases = getDatabase();
+
+    if (isLunchChecked) {
+      const lunchSubmittedRef = ref(
+        databases,
+        `userDetails/lunch/${auth.currentUser.uid}`
+      );
+      get(lunchSubmittedRef)
+        .then((lunchSubmittedSnapshot) => {
+          if (!lunchSubmittedSnapshot.exists()) {
+            // User has not submitted lunch details yet, proceed with the update
+            const updatedUserDetails = {
+              lunch_user_email: auth.currentUser.email,
+            };
+            set(
+              ref(database, `userDetails/lunch/${auth.currentUser.uid}`),
+              updatedUserDetails
+            );
+            console.log("Lunch Submitted by:", auth.currentUser.email);
+
+            const totalLunchRef = ref(database, "totalLunch");
+            set(totalLunchRef, totalLunch + 1);
+          } else {
+            // User has already submitted lunch details
+            console.log("User has already submitted lunch details");
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting lunch submission:", error);
+        });
+    }
+
+    if (isEggChecked) {
+      const eggSubmittedRef = ref(
+        databases,
+        `userDetails/egg/${auth.currentUser.uid}`
+      );
+      get(eggSubmittedRef)
+        .then((eggSubmittedSnapshot) => {
+          if (!eggSubmittedSnapshot.exists()) {
+            // User has not submitted egg details yet, proceed with the update
+            const updatedUserDetails = {
+              egg_user_email: auth.currentUser.email,
+            };
+            set(
+              ref(database, `userDetails/egg/${auth.currentUser.uid}`),
+              updatedUserDetails
+            );
+            console.log("Egg Submitted by:", auth.currentUser.email);
+
+            const totalEggRef = ref(database, "totalEgg");
+            set(totalEggRef, totalEgg + 1);
+          } else {
+            // User has already submitted egg details
+            console.log("User has already submitted egg details");
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting egg submission:", error);
+        });
       setUpdateFood(true);
       setButtonPressed(true);
-      if (isLunchChecked === true) {
-        const database = getDatabase(app);
-        const totalLunchRef = ref(database, "totalLunch");
-        set(totalLunchRef, totalLunch + 1);
-      }
-      if (isEggChecked === true) {
-        const database = getDatabase(app);
-        const totalEggRef = ref(database, "totalEgg");
-        set(totalEggRef, totalEgg + 1);
-
-      }
     }
   };
-
+//   useEffect(() => {
+//     // Retrieve egg user details from the database
+//     const eggUserDetailsRef = ref(database, "userDetails/egg");
+//     const eggUserDetailsListener = onValue(eggUserDetailsRef, (snapshot) => {
+//       const eggUserDetails = snapshot.val();
+//       if (eggUserDetails) {
+//         Object.values(eggUserDetails).forEach((user) => {
+//           console.log("Egg Submitted by:", user.egg_user_email);
+//         });
+//       }
+//     });
+// })
   return (
     <Fragment>
       <View style={styles.container}>
