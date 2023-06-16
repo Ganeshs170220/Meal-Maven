@@ -1,12 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View ,Dimensions} from "react-native";
 import { Fragment } from "react";
 import { CheckBox } from "react-native-elements";
 import { Button } from "react-native-elements";
 import Data from "./UI/Data";
 import { app, auth } from "../firebase";
 import { getDatabase, ref, onValue, off, set, get } from "firebase/database";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 const database = getDatabase(app);
 
 const MyCheckbox = ({ title, checked, onPress, disabled }) => {
@@ -29,6 +30,8 @@ const MyCheckbox = ({ title, checked, onPress, disabled }) => {
 };
 
 const HomePage = () => {
+  
+
   const [isLunchChecked, setIsLunchChecked] = useState(false);
   const [isEggChecked, setIsEggChecked] = useState(false);
   const [totalLunch, setTotalLunch] = useState(0);
@@ -182,6 +185,7 @@ const HomePage = () => {
 
   return (
     <Fragment>
+      <SafeAreaProvider>
       <View style={styles.container}>
         <Text style={styles.title}>
           <Text style={{ color: "white" }}>Meal</Text>
@@ -275,7 +279,7 @@ const HomePage = () => {
             </Text>
           )}
         </View>
-      </View>
+      </View></SafeAreaProvider>
     </Fragment>
   );
 };
@@ -339,7 +343,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   footer: {
-    marginTop: 40,
+    marginTop: 20,
     marginHorizontal: 5,
     alignItems: "center",
     backgroundColor: "black",
