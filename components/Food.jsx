@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ScrollView} from "react-native";
 import React from "react";
 import { useState, useEffect } from "react";
 import { getDatabase, ref, onValue, off } from "firebase/database";
@@ -31,8 +31,8 @@ const UserLunchDetails = () => {
   }, []);
 
   return (
-    <Fragment>
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
+
       {lunchUserDetails.map((user, index) => {
         let c1 = "";
         let c2 = "";
@@ -49,8 +49,8 @@ const UserLunchDetails = () => {
           </View>
         );
       })}
-    </View>
-  </Fragment>
+  
+  </ScrollView>
   );
 };
 export default UserLunchDetails;
